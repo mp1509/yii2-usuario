@@ -18,6 +18,7 @@ use Da\User\Event\SocialNetworkConnectEvent;
 use Da\User\Event\UserEvent;
 use Da\User\Form\GdprDeleteForm;
 use Da\User\Form\SettingsForm;
+use Da\User\Helper\LanguageHelper;
 use Da\User\Helper\SecurityHelper;
 use Da\User\Model\Profile;
 use Da\User\Model\SocialNetworkAccount;

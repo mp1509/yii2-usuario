@@ -12,6 +12,7 @@
 namespace Da\User\Form;
 
 use Da\User\Factory\EmailChangeStrategyFactory;
+use Da\User\Helper\LanguageHelper;
 use Da\User\Helper\SecurityHelper;
 use Da\User\Model\User;
 use Da\User\Traits\ContainerAwareTrait;
@@ -42,6 +43,10 @@ class SettingsForm extends Model
     /**
      * @var string
      */
+    public $preferred_language;
+    /**
+     * @var string
+     */
     public $current_password;
     /**
      * @var SecurityHelper
@@ -60,10 +65,14 @@ class SettingsForm extends Model
     public function __construct(SecurityHelper $securityHelper, array $config = [])
     {
         $this->securityHelper = $securityHelper;
+
+        // Preselecting the application language
+        $preferredLanguage = $this->getUser()->preferred_language ?: LanguageHelper::getLibraryCode(Yii::$app->language);
         $config = ArrayHelper::merge(
             [
                 'username' => $this->getUser()->username,
-                'email' => $this->getUser()->unconfirmed_email ?: $this->getUser()->email
+                'email' => $this->getUser()->unconfirmed_email ?: $this->getUser()->email,
+                'preferred_language' => LanguageHelper::getLibraryCode($preferredLanguage),
             ],
             $config
         );
@@ -104,7 +113,19 @@ class SettingsForm extends Model
                     }
                 },
             ],
+            'preferredLanguageLength' => ['preferred_language', 'string', 'max' => 5],
+            'preferredLanguagePattern' => ['preferred_language', 'match', 'pattern' => '/^([a-z]{2}|[a-z]{2}-[A-Z]{2})$/'],
         ];
+    }
+
+    /**
+     * Normalizing the preferred language code before validating
+     * @inheritdoc
+     */
+    public function beforeValidate()
+    {
+        $this->preferred_language = LanguageHelper::getYiiCode($this->preferred_language);
+        return parent::beforeValidate();
     }
 
     /**
@@ -117,6 +138,7 @@ class SettingsForm extends Model
             'username' => Yii::t('usuario', 'Username'),
             'new_password' => Yii::t('usuario', 'New password'),
             'current_password' => Yii::t('usuario', 'Current password'),
+            'preferred_language' => Yii::t('usuario', 'Preferred Language'),
         ];
     }
 
@@ -147,6 +169,7 @@ class SettingsForm extends Model
                 $user->scenario = 'settings';
                 $user->username = $this->username;
                 $user->password = $this->new_password;
+                $user->preferred_language = $this->preferred_language;
                 if ($this->email === $user->email && $user->unconfirmed_email !== null) {
                     $user->unconfirmed_email = null;
                 } elseif ($this->email !== $user->email) {

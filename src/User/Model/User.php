@@ -32,8 +32,8 @@ use yii\web\IdentityInterface;
  * @property bool $isAdmin
  * @property bool $isBlocked
  * @property bool $isConfirmed      whether user account has been confirmed or not
- * @property bool $gdpr_deleted     whether user requested deletion of his account
- * @property bool $gdpr_consent     whether user has consent personal data processing
+ * @property int $password_age
+ * @property string $language
  *
  * Database fields:
  * @property int $id
@@ -51,10 +51,13 @@ use yii\web\IdentityInterface;
  * @property int $created_at
  * @property int $updated_at
  * @property int $last_login_at
- * @property int $gdpr_consent_date date of agreement of data processing
  * @property string $last_login_ip
  * @property int $password_changed_at
- * @property int $password_age
+ * @property bool $gdpr_deleted     whether user requested deletion of his account
+ * @property int $gdpr_consent_date date of agreement of data processing
+ * @property bool $gdpr_consent     whether user has consent personal data processing
+ * @property string $preferred_language the [IETF language tag](http://en.wikipedia.org/wiki/IETF_language_tag) of the preferred language of the user
+ *
  * Defined relations:
  * @property SocialNetworkAccount[] $socialNetworkAccounts
  * @property Profile $profile
@@ -192,6 +195,7 @@ class User extends ActiveRecord implements IdentityInterface
             'last_login_ip' => Yii::t('usuario', 'Last login IP'),
             'password_changed_at' => Yii::t('usuario', 'Last password change'),
             'password_age' => Yii::t('usuario', 'Password age'),
+            'preferred_language' => Yii::t('usuario', 'Preferred Language'),
         ];
     }
 
@@ -248,7 +252,10 @@ class User extends ActiveRecord implements IdentityInterface
             // two factor auth rules
             'twoFactorSecretTrim' => ['auth_tf_key', 'trim'],
             'twoFactorSecretLength' => ['auth_tf_key', 'string', 'max' => 16],
-            'twoFactorEnabledNumber' => ['auth_tf_enabled', 'boolean']
+            'twoFactorEnabledNumber' => ['auth_tf_enabled', 'boolean'],
+
+            // preferred language rule
+            'preferredLanguage' => ['preferred_language', 'string', 'max' => 5],
         ];
     }
 
@@ -360,5 +367,15 @@ class User extends ActiveRecord implements IdentityInterface
         $d = new \DateTime("@{$this->password_changed_at}");
 
         return $d->diff(new \DateTime(), true)->format("%a");
+    }
+
+    /**
+     * Returns the code of the language used by the user based on the one selected as preferred,
+     * if none is set it will return the one used in the application
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->preferred_language ?: Yii::$app->language;
     }
 }

@@ -9,6 +9,7 @@
  * the LICENSE file that was distributed with this source code.
  */
 
+use Da\User\Module;
 use yii\helpers\Html;
 
 /**
@@ -17,18 +18,18 @@ use yii\helpers\Html;
  */
 ?>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'Hello') ?>,
+    <?= Module::t('usuario', 'Hello', [], $user) ?>,
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'Thank you for signing up on {0}', Yii::$app->name) ?>.
-    <?= Yii::t('usuario', 'In order to complete your registration, please click the link below') ?>.
+    <?= Module::t('usuario', 'Thank you for signing up on {0}', Yii::$app->name, $user) ?>.
+    <?= Module::t('usuario', 'In order to complete your registration, please click the link below', [], $user) ?>.
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
     <?= Html::a(Html::encode($token->url), $token->url) ?>
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'If you cannot click the link, please try pasting the text into your browser') ?>.
+    <?= Module::t('usuario', 'If you cannot click the link, please try pasting the text into your browser', [], $user) ?>.
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'If you did not make this request you can ignore this email') ?>.
+    <?= Module::t('usuario', 'If you did not make this request you can ignore this email', [], $user) ?>.
 </p>

@@ -9,6 +9,8 @@
  * the LICENSE file that was distributed with this source code.
  */
 
+use Da\User\Helper\LanguageHelper;
+use dosamigos\selectize\SelectizeDropDownList;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -57,6 +59,10 @@ $module = Yii::$app->getModule('user');
                 <?= $form->field($model, 'username') ?>
 
                 <?= $form->field($model, 'new_password')->passwordInput() ?>
+
+                <?= $form->field($model, 'preferred_language')->widget(SelectizeDropDownList::class, [
+                    'items' => LanguageHelper::list()
+                ]) ?>
 
                 <hr/>
 
@@ -176,7 +182,7 @@ $(document)
        e.preventDefault();
        var btn = $(this);
        btn.prop('disabled', true);
-       
+
        $.getJSON('{$verify}', {code: $('#tfcode').val()}, function(data){
           btn.prop('disabled', false);
           if(data.success) {

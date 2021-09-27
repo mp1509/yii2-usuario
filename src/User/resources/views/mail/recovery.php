@@ -9,6 +9,7 @@
  * the LICENSE file that was distributed with this source code.
  */
 
+use Da\User\Module;
 use yii\helpers\Html;
 
 /**
@@ -17,22 +18,23 @@ use yii\helpers\Html;
  */
 ?>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'Hello') ?>,
+    <?= Module::t('usuario', 'Hello', [], $user) ?>,
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t(
+    <?= Module::t(
         'usuario',
         'We have received a request to reset the password for your account on {0}',
-        Yii::$app->name
+        Yii::$app->name,
+        $user
     ) ?>.
-    <?= Yii::t('usuario', 'Please click the link below to complete your password reset') ?>.
+    <?= Module::t('usuario', 'Please click the link below to complete your password reset', [], $user) ?>.
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
     <?= Html::a(Html::encode($token->url), $token->url); ?>
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'If you cannot click the link, please try pasting the text into your browser') ?>.
+    <?= Module::t('usuario', 'If you cannot click the link, please try pasting the text into your browser', [], $user) ?>.
 </p>
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Yii::t('usuario', 'If you did not make this request you can ignore this email') ?>.
+    <?= Module::t('usuario', 'If you did not make this request you can ignore this email', [], $user) ?>.
 </p>

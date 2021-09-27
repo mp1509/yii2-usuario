@@ -13,9 +13,12 @@ namespace Da\User;
 
 use Da\User\Contracts\MailChangeStrategyInterface;
 use Da\User\Filter\AccessRuleFilter;
+use Da\User\Model\User;
 use Yii;
 use yii\base\Module as BaseModule;
+use yii\di\Instance;
 use yii\helpers\Html;
+use yii\i18n\I18N;
 
 /**
  * This is the main module class of the yii2-usuario extension.
@@ -229,5 +232,17 @@ class Module extends BaseModule
         );
 
         return $this->gdprConsentMessage ?: $defaultConsentMessage;
+    }
+
+    /**
+     * Translate a message in the language preferred by the given user.
+     * @see I18N::translate()
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function t($category, $message, $params, $user)
+    {
+        Instance::ensure($user, User::class);
+        $language = $user ? $user->language : Yii::$app->language;
+        return Yii::t($category, $message, $params, $language);
     }
 }
