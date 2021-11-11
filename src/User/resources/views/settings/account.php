@@ -64,6 +64,10 @@ $module = Yii::$app->getModule('user');
                     'items' => LanguageHelper::list()
                 ]) ?>
 
+                <?= $form->field($model, 'timezone')->widget(SelectizeDropDownList::class, [
+                    'items' => array_combine(timezone_identifiers_list(), timezone_identifiers_list()),
+                ]) ?>
+
                 <hr/>
 
                 <?= $form->field($model, 'current_password')->passwordInput() ?>

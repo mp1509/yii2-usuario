@@ -57,6 +57,7 @@ use yii\web\IdentityInterface;
  * @property int $gdpr_consent_date date of agreement of data processing
  * @property bool $gdpr_consent     whether user has consent personal data processing
  * @property string $preferred_language the [IETF language tag](http://en.wikipedia.org/wiki/IETF_language_tag) of the preferred language of the user
+ * @property string $timezone
  *
  * Defined relations:
  * @property SocialNetworkAccount[] $socialNetworkAccounts
@@ -196,6 +197,7 @@ class User extends ActiveRecord implements IdentityInterface
             'password_changed_at' => Yii::t('usuario', 'Last password change'),
             'password_age' => Yii::t('usuario', 'Password age'),
             'preferred_language' => Yii::t('usuario', 'Preferred Language'),
+            'timezone' => Yii::t('usuario', 'Time Zone'),
         ];
     }
 
@@ -256,6 +258,9 @@ class User extends ActiveRecord implements IdentityInterface
 
             // preferred language rule
             'preferredLanguage' => ['preferred_language', 'string', 'max' => 5],
+
+            // time zone
+            'timeZone' => ['timezone', 'string', 'max' => 50],
         ];
     }
 

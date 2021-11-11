@@ -47,6 +47,10 @@ class SettingsForm extends Model
     /**
      * @var string
      */
+    public $timezone;
+    /**
+     * @var string
+     */
     public $current_password;
     /**
      * @var SecurityHelper
@@ -73,6 +77,7 @@ class SettingsForm extends Model
                 'username' => $this->getUser()->username,
                 'email' => $this->getUser()->unconfirmed_email ?: $this->getUser()->email,
                 'preferred_language' => LanguageHelper::getLibraryCode($preferredLanguage),
+                'timezone' => $this->getUser()->timezone,
             ],
             $config
         );
@@ -115,6 +120,7 @@ class SettingsForm extends Model
             ],
             'preferredLanguageLength' => ['preferred_language', 'string', 'max' => 5],
             'preferredLanguagePattern' => ['preferred_language', 'match', 'pattern' => '/^([a-z]{2}|[a-z]{2}-[A-Z]{2})$/'],
+            'timeZone' => ['timezone', 'string', 'max' => 50],
         ];
     }
 

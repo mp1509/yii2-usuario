@@ -118,7 +118,7 @@ class SettingsController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['confirm'],
+                        'actions' => ['confirm', 'set-time-zone'],
                         'roles' => ['?', '@'],
                     ],
                 ],
@@ -488,5 +488,24 @@ class SettingsController extends Controller
         $this->trigger(SocialNetworkConnectEvent::EVENT_BEFORE_DISCONNECT, $event);
         $account->delete();
         $this->trigger(SocialNetworkConnectEvent::EVENT_AFTER_DISCONNECT, $event);
+    }
+
+    /**
+     * @param $timeZone
+     */
+    public function actionSetTimeZone($timeZone)
+    {
+        \Yii::$app->timeZone = $timeZone;
+        if(\Yii::$app->user->isGuest) {
+            return;
+        }
+        /** @var User $user */
+        $user = \Yii::$app->user->identity;
+        if(!$user->timezone) {
+            $user->timezone = $timeZone;
+        }
+        if(!$user->save()) {
+            \Yii::error('Cannot automatically save the user time zone');
+        }
     }
 }

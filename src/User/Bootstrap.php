@@ -46,6 +46,7 @@ class Bootstrap implements BootstrapInterface
             $this->initContainer($app, $map);
             $this->initTranslations($app);
             $this->initMailServiceConfiguration($app, $app->getModule('user'));
+            $this->initAliases($app);
 
             if ($app instanceof WebApplication) {
                 $this->initControllerNamespace($app);
@@ -292,6 +293,18 @@ class Bootstrap implements BootstrapInterface
     {
         $app->getModule('user')->controllerNamespace = $app->getModule('user')->controllerNamespace;
         $app->getModule('user')->setViewPath($app->getModule('user')->viewPath);
+    }
+
+    /**
+     * Registers aliases.
+     *
+     * @param Application $app
+     */
+    protected function initAliases(Application $app)
+    {
+        if(!isset($app->aliases['@user'])) {
+            $app->setAliases(['@user' => __DIR__]);
+        }
     }
 
     /**
