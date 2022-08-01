@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## work in progress
+ - Fix replace non-working travis build with working github actions build (TonisOrmisson)
+ - Fix user login events not triggered on ajax requests (TonisOrmisson)
  - Enh: Added minimum requirements when a new password is automatically generated (MatteoF96)
  - Fix #380: Avoid rewriting AccessRule::matchRole (maxxer)
  - Fix #378: Add module attribute 'disableIpLogging' (jkmssoft)
@@ -9,6 +11,7 @@
  - Enh: Added SK translations (snickom)
  - Fix: allow password_changed_at to be saved when reseting password (p4blojf)
  - Fix #430: Moved EVENT_BEFORE_PROFILE_UPDATE to correct place (eluhr)
+ - 
 
 ## 1.5.1 April 5, 2020
  - Fix #370: Extending view fix (effsoft)

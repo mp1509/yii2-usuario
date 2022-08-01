@@ -29,10 +29,14 @@ use Da\User\Query\SocialNetworkAccountQuery;
 use Da\User\Query\UserQuery;
 use Da\User\Service\EmailChangeService;
 use Da\User\Service\TwoFactorQrCodeUriGeneratorService;
+use Da\User\Service\TwoFactorEmailCodeGeneratorService;
+use Da\User\Service\TwoFactorSmsCodeGeneratorService;
 use Da\User\Traits\ContainerAwareTrait;
 use Da\User\Traits\ModuleAwareTrait;
 use Da\User\Validator\AjaxRequestModelValidator;
 use Da\User\Validator\TwoFactorCodeValidator;
+use Da\User\Validator\TwoFactorEmailValidator;
+use Da\User\Validator\TwoFactorTextMessageValidator;
 use Yii;
 use yii\base\DynamicModel;
 use yii\filters\AccessControl;
@@ -112,7 +116,8 @@ class SettingsController extends Controller
                             'delete',
                             'two-factor',
                             'two-factor-enable',
-                            'two-factor-disable'
+                            'two-factor-disable',
+                            'two-factor-mobile-phone'
                         ],
                         'roles' => ['@'],
                     ],
@@ -401,16 +406,30 @@ class SettingsController extends Controller
 
     public function actionTwoFactor($id)
     {
-        /** @var User $user */
+        $choice=Yii::$app->request->post('choice');
+        /**
+        * @var User $user
+        */
         $user = $this->userQuery->whereId($id)->one();
 
         if (null === $user) {
             throw new NotFoundHttpException();
         }
 
-        $uri = $this->make(TwoFactorQrCodeUriGeneratorService::class, [$user])->run();
-
-        return $this->renderAjax('two-factor', ['id' => $id, 'uri' => $uri]);
+        switch($choice)
+        {
+            case 'google-authenticator':
+                $uri = $this->make(TwoFactorQrCodeUriGeneratorService::class, [$user])->run();
+                return $this->renderAjax('two-factor', ['id' => $id, 'uri' => $uri]);
+            case 'email':
+                $emailCode = $this->make(TwoFactorEmailCodeGeneratorService::class, [$user])->run();
+                return $this->renderAjax('two-factor-email', ['id' => $id, 'code' => $emailCode]);
+            case 'sms':
+                // get mobile phone, if exists
+                $mobilePhone=$user->getAuthTfMobilePhone();
+                $smsCode = $this->make(TwoFactorSmsCodeGeneratorService::class, [$user])->run();
+                return $this->renderAjax('two-factor-sms', ['id' => $id, 'code' => $smsCode, 'mobilePhone' => $mobilePhone] );
+        }
     }
 
     public function actionTwoFactorEnable($id)
@@ -427,18 +446,21 @@ class SettingsController extends Controller
             ];
         }
         $code = Yii::$app->request->get('code');
+        $module = Yii::$app->getModule('user');
+        $validators = $module->twoFactorAuthenticationValidators;
+        $choice = Yii::$app->request->get('choice');
+        $codeDurationTime = ArrayHelper::getValue($validators,$choice.'.codeDurationTime', 0);
+        $class = ArrayHelper::getValue($validators,$choice.'.class');
 
-        $success = $this
-            ->make(TwoFactorCodeValidator::class, [$user, $code, $this->module->twoFactorAuthenticationCycles])
-            ->validate();
-
-        $success = $success && $user->updateAttributes(['auth_tf_enabled' => '1']);
+        $object = $this
+            ->make($class, [$user, $code, $this->module->twoFactorAuthenticationCycles]);
+        $success = $object->validate();
+        $success = $success && $user->updateAttributes(['auth_tf_enabled' => '1','auth_tf_type' => $choice]);
+        $message = $success? $object->getSuccessMessage():$object->getUnsuccessMessage($codeDurationTime);
 
         return [
             'success' => $success,
-            'message' => $success
-                ? Yii::t('usuario', 'Two factor authentication successfully enabled.')
-                : Yii::t('usuario', 'Verification failed. Please, enter new code.')
+            'message' => $message
         ];
     }
 
@@ -507,5 +529,43 @@ class SettingsController extends Controller
         if(!$user->save()) {
             \Yii::error('Cannot automatically save the user time zone');
         }
+    }
+
+    /**
+     * @param $id
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionTwoFactorMobilePhone($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        /**
+        * @var User $user
+        */
+        $user = $this->userQuery->whereId($id)->one();
+
+        if (null === $user) {
+            return [
+                'success' => false,
+                'message' => Yii::t('usuario', 'User not found.')
+            ];
+        }
+        $mobilePhone = Yii::$app->request->get('mobilephone');
+        $currentMobilePhone = $user->getAuthTfMobilePhone();
+        $success=false;
+        if($currentMobilePhone==$mobilePhone){
+            $success=true;
+        }else{
+            $success = $user->updateAttributes(['auth_tf_mobile_phone' => $mobilePhone]);
+            $this->make(TwoFactorSmsCodeGeneratorService::class, [$user])->run();
+        }
+
+        return [
+            'success' => $success,
+            'message' => $success
+            ? Yii::t('usuario', 'Mobile phone number successfully enabled.')
+            : Yii::t('usuario', 'Error while enabling SMS two factor authentication.'),
+        ];
     }
 }

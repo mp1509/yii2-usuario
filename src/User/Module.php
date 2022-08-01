@@ -85,6 +85,10 @@ class Module extends BaseModule
      */
     public $enableTwoFactorAuthentication = false;
     /**
+     * @var array list of channels for two factor authentication availables
+     */
+    public $twoFactorAuthenticationValidators = null;
+    /**
      * @var int cycles of key generation are set on 30 sec. To avoid sync issues, increased validity up to 60 sec.
      * @see http://2fa-library.readthedocs.io/en/latest/
      */
