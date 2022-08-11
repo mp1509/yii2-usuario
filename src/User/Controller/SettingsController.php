@@ -145,9 +145,9 @@ class SettingsController extends Controller
         }
 
         /**
-        * 
         *
-        * @var ProfileEvent $event 
+        *
+        * @var ProfileEvent $event
         */
         $event = $this->make(ProfileEvent::class, [$profile]);
 
@@ -202,9 +202,9 @@ class SettingsController extends Controller
             throw new NotFoundHttpException();
         }
         /**
-        * 
         *
-        * @var GdprDeleteForm $form 
+        *
+        * @var GdprDeleteForm $form
         */
         $form = $this->make(GdprDeleteForm::class);
 
@@ -264,9 +264,9 @@ class SettingsController extends Controller
     public function actionGdprConsent()
     {
         /**
-        * 
         *
-        * @var User $user 
+        *
+        * @var User $user
         */
         $user = Yii::$app->user->identity;
         if ($user->gdpr_consent) {
@@ -351,9 +351,9 @@ class SettingsController extends Controller
     public function actionAccount()
     {
         /**
-* 
+*
          *
- * @var SettingsForm $form 
+ * @var SettingsForm $form
 */
         $form = $this->make(SettingsForm::class);
         $event = $this->make(UserEvent::class, [$form->getUser()]);
@@ -422,9 +422,9 @@ class SettingsController extends Controller
         }
 
         /**
-        * 
         *
-        * @var User $user 
+        *
+        * @var User $user
         */
         $user = Yii::$app->user->identity;
         $event = $this->make(UserEvent::class, [$user]);
@@ -472,9 +472,9 @@ class SettingsController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         /**
-        * 
         *
-        * @var User $user 
+        *
+        * @var User $user
         */
         $user = $this->userQuery->whereId($id)->one();
 
@@ -506,12 +506,12 @@ class SettingsController extends Controller
     public function actionTwoFactorDisable($id)
     {
         /**
-        * 
         *
-        * @var User $user 
+        *
+        * @var User $user
         */
         $user = $this->userQuery->whereId($id)->one();
-        
+
         if (null === $user) {
             throw new NotFoundHttpException();
         }
@@ -540,9 +540,9 @@ class SettingsController extends Controller
     protected function disconnectSocialNetwork($id)
     {
         /**
-        * 
         *
-        * @var SocialNetworkAccount $account 
+        *
+        * @var SocialNetworkAccount $account
         */
         $account = $this->socialNetworkAccountQuery->whereId($id)->one();
 
@@ -605,14 +605,14 @@ class SettingsController extends Controller
             $success=true;
         }else{
             $success = $user->updateAttributes(['auth_tf_mobile_phone' => $mobilePhone]);
-            $this->make(TwoFactorSmsCodeGeneratorService::class, [$user])->run();
         }
+        $success = $success && $this->make(TwoFactorSmsCodeGeneratorService::class, [$user])->run();
 
         return [
             'success' => $success,
             'message' => $success
-            ? Yii::t('usuario', 'Mobile phone number successfully enabled.')
-            : Yii::t('usuario', 'Error while enabling SMS two factor authentication.'),
+                ? Yii::t('usuario', 'Mobile phone number successfully enabled.')
+                : Yii::t('usuario', 'Error while enabling SMS two factor authentication. Please reload the page.'),
         ];
     }
 }
