@@ -11,6 +11,7 @@
 
 use Da\User\Module;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /**
  * @var \Da\User\Module      $module
@@ -30,6 +31,9 @@ use yii\helpers\Html;
         <?= Module::t('usuario', 'We have generated a password for you', [], $user) ?>:
         <strong><?= $user->password ?></strong>
     <?php endif ?>
+    <?php if ($module->allowPasswordRecovery): ?>
+        <?= Yii::t('usuario', 'If you haven\'t received a password, you can reset it at') ?>: <strong><?= Html::a(Html::encode(Url::to(['/user/forgot'], true)), Url::to(['/user/forgot'], true)) ?></strong>
+    <?php endif ?>
 
 </p>
 
@@ -46,5 +50,5 @@ use yii\helpers\Html;
 <?php endif ?>
 
 <p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">
-    <?= Module::t('usuario', 'If you did not make this request you can ignore this email', [], $user) ?>.
+    <?= Yii::t('usuario', 'You received this email because someone, possibly you or someone on your behalf, have created an account at {app_name}', ['app_name' => Yii::$app->name]) ?>.
 </p>
