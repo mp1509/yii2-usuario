@@ -32,7 +32,7 @@ use yii\helpers\Url;
         <strong><?= $user->password ?></strong>
     <?php endif ?>
     <?php if ($module->allowPasswordRecovery): ?>
-        <?= Yii::t('usuario', 'If you haven\'t received a password, you can reset it at') ?>: <strong><?= Html::a(Html::encode(Url::to(['/user/forgot'], true)), Url::to(['/user/forgot'], true)) ?></strong>
+        <?= Yii::t('usuario', 'If you haven\'t received a password, you can reset it at') ?>: <strong><?= Html::a(Html::encode(Url::to(['/user/recovery/request'], true)), Url::to(['/user/recovery/request'], true)) ?></strong>
     <?php endif ?>
 
 </p>
